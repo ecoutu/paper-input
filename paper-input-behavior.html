@@ -9,6 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-behaviors/iron-control-state.html">
+<link rel="import" href="../iron-a11y-keys-behavior/iron-a11y-keys-behavior.html">
 
 <script>
 
@@ -287,12 +288,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     listeners: {
-      'addon-attached': '_onAddonAttached'
+      'addon-attached': '_onAddonAttached',
+      'focus': '_onFocus',
+      'blur': '_onBlur'
     },
 
     observers: [
       '_focusedControlStateChanged(focused)'
     ],
+
+    keyBindings: {
+      'shift+tab:keydown': '_onShiftTabDown'
+    },
+
+    hostAttributes: {
+      tabindex: 0
+    },
 
     /**
      * Returns a reference to the input element.
@@ -334,6 +345,50 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       return this.inputElement.validate();
     },
 
+    /**
+     * Forward focus to inputElement
+     */
+    _onFocus: function() {
+      if (!this._shiftTabPressed) {
+        // iron-autogrow-textarea
+        if (this.inputElement.textarea) {
+          this.inputElement.textarea.focus();
+        } else {
+          this.inputElement.focus();
+        }
+      }
+    },
+
+    /**
+     * Forward blur to inputElement
+     */
+    _onBlur: function() {
+      if (!this._shiftTabPressed) {
+        // iron-autogrow-textarea
+        if (this.inputElement.textarea) {
+          this.inputElement.textarea.blur();
+        } else {
+          this.inputElement.blur();
+        }
+      }
+    },
+
+    /**
+     * Handler that is called when a shift+tab keypress is detected by the menu.
+     *
+     * @param {CustomEvent} event A key combination event.
+     */
+    _onShiftTabDown: function(event) {
+      var oldTabIndex;
+      this._shiftTabPressed = true;
+      oldTabIndex = this.getAttribute('tabindex');
+      this.setAttribute('tabindex', '-1');
+      this.async(function() {
+        this.setAttribute('tabindex', oldTabIndex);
+        this._shiftTabPressed = false;
+      // NOTE(cdata): polymer/polymer#1305
+      }, 1);
+    },
     /**
      * If `autoValidate` is true, then validates the element.
      */
@@ -418,6 +473,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   };
 
   /** @polymerBehavior */
-  Polymer.PaperInputBehavior = [Polymer.IronControlState, Polymer.PaperInputBehaviorImpl];
+  Polymer.PaperInputBehavior = [
+    Polymer.IronControlState,
+    Polymer.IronA11yKeysBehavior,
+    Polymer.PaperInputBehaviorImpl
+  ];
 
 </script>

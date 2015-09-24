@@ -36,6 +36,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="has-tabindex">
+    <template>
+      <paper-textarea tabindex="0"></paper-input>
+    </template>
+  </test-fixture>
+
   <test-fixture id="label">
     <template>
       <paper-textarea label="foo"></paper-textarea>
@@ -129,6 +135,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.isTrue(inputContent.classList.contains('label-is-floating'), 'label is floating');
       });
 
+      test('focus the textarea', function() {
+        var input = fixture('has-tabindex');
+        assert.notEqual(document.activeElement, input.inputElement.textarea);
+        MockInteractions.focus(input);
+        assert.equal(document.activeElement, input.inputElement.textarea);
+      });
     });
 
     suite('focus/blur events', function() {

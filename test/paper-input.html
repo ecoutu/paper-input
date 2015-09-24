@@ -37,6 +37,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </template>
   </test-fixture>
 
+  <test-fixture id="has-tabindex">
+    <template>
+      <paper-input tabindex="0"></paper-input>
+    </template>
+  </test-fixture>
+
   <test-fixture id="label">
     <template>
       <paper-input label="foo"></paper-input>
@@ -167,6 +173,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         assert.equal(ironInput.selectionEnd, 2, 'selectionEnd is preserved');
       });
 
+      test('focus the input', function() {
+        var input = fixture('has-tabindex');
+        assert.notEqual(document.activeElement, input.inputElement);
+        MockInteractions.focus(input);
+        assert.equal(document.activeElement, input.inputElement);
+      });
+
     });
 
     suite('focus/blur events', function() {
@@ -210,7 +223,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       });
 
     });
-
 
     suite('validation', function() {
 
